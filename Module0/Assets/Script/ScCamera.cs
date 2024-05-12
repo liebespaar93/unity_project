@@ -13,15 +13,22 @@ namespace Script
         private float _currTime = 0.0f;
         public float cameraFar = 3.0f;
         public float rotSpeed = 500.0f;
+
+        private Vector3 _prevPlayerPosion;
         
         // Start is called before the first frame update
         void Start()
         {
+            _prevPlayerPosion = new Vector3(0, 0, 0);
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (player)
+            {
+                _prevPlayerPosion = player.transform.position;
+            }
             if (Input.GetMouseButton(0))
             {
                 MouseRotation();
@@ -46,22 +53,22 @@ namespace Script
                 (mx * Time.deltaTime * rotSpeed), 
                 0);
             
-            Vector3 cameraTargetPoint = player.transform.position + (this.transform.forward * -cameraFar);
+            Vector3 cameraTargetPoint = _prevPlayerPosion + (this.transform.forward * -cameraFar);
             
             this.transform.position += cameraTargetPoint - this.transform.position;
         }
         
         void CameraAutoFollow()
         {
-            Vector3 dir = player.transform.position - this.transform.position;
+            Vector3 dir = _prevPlayerPosion - this.transform.position;
             dir.Normalize();
             // camera position
             // Vector3 cameraTargetPoint = player.transform.position + (player.transform.forward * -5);
             
-            Vector3 cameraTargetPoint = player.transform.position + (dir * -cameraFar);
-            if (this.transform.position.y < player.transform.position.y + 1.0f)
+            Vector3 cameraTargetPoint = _prevPlayerPosion + (dir * -cameraFar);
+            if (this.transform.position.y < _prevPlayerPosion.y + 1.0f)
             {
-                cameraTargetPoint.y = player.transform.position.y + 1.0f;
+                cameraTargetPoint.y = _prevPlayerPosion.y + 1.0f;
             }
 
             // cameraTargetPoint.Normalize();
@@ -69,7 +76,7 @@ namespace Script
             this.transform.position += move;
 
             // camera rotation
-            Vector3 dirRotate = player.transform.position - this.transform.position;
+            Vector3 dirRotate = _prevPlayerPosion - this.transform.position;
             dirRotate.Normalize();
             this.transform.forward = dir;
         }
